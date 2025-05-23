@@ -1,10 +1,11 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SafeUser } from "@/lib/model/user";
 import { Button } from "./ui/button";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 interface ProfileCardProps {
     user: SafeUser;
@@ -14,40 +15,44 @@ interface ProfileCardProps {
 const ProfileCard = ({ user, variant = "full" }: ProfileCardProps) => {
     const { data: session } = useSession();
 
-    const [isFollowing, setIsFollowing] = useState(true);
-    const [followers, setFollowers] = useState(0);
+    const [isFollowing, setIsFollowing] = useState(user.isFollowing || false);
+    const [followers, setFollowers] = useState(user.followersCount);
 
-    const handleFollow = () => {
-        if (isFollowing) {
-            setFollowers(followers - 1);
-        } else {
-            setFollowers(followers + 1);
+    const handleFollow = async () => {
+        const action = isFollowing ? "unfollow" : "follow";
+        const res = await fetch(`/api/users/${user.username}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ action })
+        });
+
+        if (res.ok) {
+            setFollowers((prev) => prev + (isFollowing ? -1 : 1));
+            setIsFollowing((prev) => !prev);
         }
-        setIsFollowing(!isFollowing);
     };
 
     const isCurrentUser = user.id === session?.user?.id;
-
-
-    console.log("Logged-in user ID:", session?.user?.id);
-    console.log("Profile user ID:", user.id);
-
 
     if (variant === "compact") {
         return (
             <Card className="bg-background transition-colors">
                 <CardContent className="p-4">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <Avatar>
-                                <AvatarImage src={user.image} alt={user.name} />
-                                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                                <p className="font-medium">{user.name}</p>
-                                <p className="text-xs text-muted-foreground">@{user.username}</p>
+                        <Link href={`/${user.username}`} >
+                            <div className="flex items-center gap-3">
+                                <Avatar>
+                                    <AvatarImage src={user.image} alt={user.name} />
+                                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <p className="font-medium">{user.name}</p>
+                                    <p className="text-xs text-muted-foreground">@{user.username}</p>
+                                </div>
                             </div>
-                        </div>
+                        </Link>
                         {!isCurrentUser && (
                             <Button
                                 variant={isFollowing ? "outline" : "default"}
@@ -85,7 +90,7 @@ const ProfileCard = ({ user, variant = "full" }: ProfileCardProps) => {
                             <p className="text-xs text-muted-foreground">Posts</p>
                         </div>
                         <div className="text-center">
-                            <p className="font-bold">{user.followersCount}</p>
+                            <p className="font-bold">{followers}</p>
                             <p className="text-xs text-muted-foreground">Followers</p>
                         </div>
                         <div className="text-center">

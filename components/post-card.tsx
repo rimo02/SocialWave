@@ -47,8 +47,8 @@ const PostCard = ({ post }: PostCardProps) => {
         <Card className='mb-4 bg-background text-foreground shadow-sm'>
             <CardHeader className='p-4 pb-2 flex space-x-2 border-b-1'>
                 <Link href={`/profile/${post.author?.username}`}>
-                    <Avatar>
-                        <AvatarImage src={post.author.image} />
+                    <Avatar className='w-10 h-10'>
+                        <AvatarImage src={post.author.image} className='w-full h-full' />
                         <AvatarFallback>{post.author.username}</AvatarFallback>
                     </Avatar>
                 </Link>

@@ -7,7 +7,7 @@ const Feed = () => {
     const { postList, lastPostRef, loading, hasMore } = useInfiniteScroll(`/api/posts`);
 
     return (
-        <div className='p-3 grid grid-cols-1 md:grid-cols-2 xlg:grid-cols-3'>
+        <div className='p-3 grid grid-cols-1 md:grid-cols-2 xlg:grid-cols-3 gap-3'>
             {postList.map((post, idx) => {
                 const isLast = idx === postList.length - 1;
                 return (

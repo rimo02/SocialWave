@@ -65,7 +65,7 @@ const Header = () => {
                             </DropdownMenuTrigger>
 
                             <DropdownMenuContent align='start'>
-                                <DropdownMenuItem onClick={() => router.push('/profile')}>
+                                <DropdownMenuItem onClick={() => router.push(`/profile/${session?.user?.username}`,)}>
                                     Profile
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => signOut()}>
